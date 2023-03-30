@@ -1,0 +1,62 @@
+---
+title: "Homework 4 - Functions II"
+author: "Runxiang Liu"
+date: "30/3/2023"
+output:
+  md_document:
+    toc: yes
+    variant: markdown_github
+  html_document:
+    toc: yes
+  word_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+# Homework 4 - Functions II
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## loading dataset
+```{r}
+library(tidyverse)
+library(readr)
+library(purrr)
+```
+
+
+## Convert the data to a tibble data-frame. Use one or more functions from the purrr package that subsets list data to subset columns in the data to three unique datasets. The first should include columns that are factors only (i.e. - categorical data), the second should include columns that are numeric only, and the third should include columns with logical values only.
+```{r}
+my_data <- read.table(file='Housing_prices_data.csv', header=TRUE, sep=",");
+
+my_tibble <- as_tibble(my_data)
+
+factors_only <- my_tibble %>% keep(is.factor)
+
+numeric_only <- my_tibble %>% keep(is.numeric)
+
+logical_only <- my_tibble %>% keep(is.logical)
+  
+```
+
+## Using the second dataset from question #1, calculate column means with one of the apply functions.
+```{r}
+col_means <- apply(numeric_only, 2, mean)
+```
+
+## Using the numeric_only dataset to create a new dataset that only includes the variable indicating sales price (variable name is "SalePrice"). 
+```{r}
+sales_price <- numeric_only %>% select(SalePrice)
+my_data_split <- split(sales_price, my_data$BldgType)
+col_means <- map_dbl(my_data_split, colMeans)
+```
+
+## Convert the full original housing dataset to a tibble and then convert the tibble to a list using as.list().
+```{r}
+data_tibble <- as_tibble(my_data)
+data_list <- as.list(data_tibble)
+sales_price_list <- list(data_list$SalePrice)
+bldg_type_list <- list(data_list$BldgType)
+```
+
